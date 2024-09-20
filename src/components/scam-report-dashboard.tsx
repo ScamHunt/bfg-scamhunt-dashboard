@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Bell, DollarSign, ShieldAlert, Users, User, Settings, LogOut } from "lucide-react"
 
