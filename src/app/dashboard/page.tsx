@@ -34,7 +34,7 @@ const Dashboard = () => {
               <div className="flex">
                 <div className="flex-shrink-0 flex items-center">
                   <ShieldAlert className="h-8 w-8 text-neon-green dark:text-green-400" />
-                  <span className="ml-2 text-2xl font-bold">ScamHuunt</span>
+                  <span className="ml-2 text-2xl font-bold">ScamHunt</span>
                 </div>
               </div>
               <div className="flex items-center">

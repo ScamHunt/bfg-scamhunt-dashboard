@@ -39,7 +39,7 @@ const Signup = () => {
             <Input name="password" id="password" type="password" required />
           </div>
           <Button formAction={signup} className="w-full bg-green-600 hover:bg-green-700">
-            
+            SignUp
           </Button>
         
         </form>
