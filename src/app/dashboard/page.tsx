@@ -1,4 +1,5 @@
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+
+// import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Bell, DollarSign, ShieldAlert, Users, User, Settings, LogOut } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,30 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const data = [
-  { name: "Jan", reports: 65 },
-  { name: "Feb", reports: 59 },
-  { name: "Mar", reports: 80 },
-  { name: "Apr", reports: 81 },
-  { name: "May", reports: 56 },
-  { name: "Jun", reports: 55 },
-  { name: "Jul", reports: 40 },
-]
+import { signOutAction } from "./actions"
+// const data = [
+//   { name: "Jan", reports: 65 },
+//   { name: "Feb", reports: 59 },
+//   { name: "Mar", reports: 80 },
+//   { name: "Apr", reports: 81 },
+//   { name: "May", reports: 56 },
+//   { name: "Jun", reports: 55 },
+//   { name: "Jul", reports: 40 },
+// ]
 
-export function ScamReportDashboard() {
-  // const [darkMode, setDarkMode] = useState(false)
-
-  // const toggleDarkMode = () => {
-  //   setDarkMode(!darkMode)
-  //   if (darkMode) {
-  //     document.documentElement.classList.remove("'dark'")
-  //   } else {
-  //     document.documentElement.classList.add("'dark'")
-  //   }
-  // }
-
-  return (
-    <div className={`min-h-screen `}>
+const Dashboard = () => {
+    return ( 
+         <div className={`min-h-screen `}>
       <div className="bg-off-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <nav className="border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,10 +56,21 @@ export function ScamReportDashboard() {
                       <span>Settings</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
+                    <DropdownMenuItem >
+                        <form action={signOutAction}>
+                        <Button type="submit" className="bg-red-600 hover:bg-red-700 text-white">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+
+                        </Button>
+                      
+                     </form>
+
+              
                     </DropdownMenuItem>
+
+
+            
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -126,7 +128,7 @@ export function ScamReportDashboard() {
                   </CardContent>
                 </Card>
               </div>
-              <Card>
+              {/* <Card>
                 <CardHeader>
                   <CardTitle>Monthly Scam Reports</CardTitle>
                 </CardHeader>
@@ -139,11 +141,13 @@ export function ScamReportDashboard() {
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
-              </Card>
+              </Card> */}
             </TabsContent>
           </Tabs>
         </div>
       </div>
     </div>
-  )
+     );
 }
+ 
+export default Dashboard;
