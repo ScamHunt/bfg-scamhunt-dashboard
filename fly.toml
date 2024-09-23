@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for bfg-scamhunt-dashboard on 2024-09-24T00:17:03+08:00
+# fly.toml app configuration file generated for scamview on 2024-09-24T01:21:49+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'scamhunt'
+app = 'scamview'
 primary_region = 'sin'
 
 [build]
@@ -11,7 +11,7 @@ primary_region = 'sin'
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = 'off'
   auto_start_machines = false
   min_machines_running = 1
   processes = ['app']
