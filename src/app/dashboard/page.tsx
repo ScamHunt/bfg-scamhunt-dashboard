@@ -1,20 +1,19 @@
 'use client'
 // import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { Bell, DollarSign, ShieldAlert, Users, User, Settings, LogOut } from "lucide-react"
+import { Bell, DollarSign, ShieldAlert, Users } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+// import { Button } from "@/components/ui/button"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
 import { createClient } from "@/utils/supabase/client"
 import { useEffect ,useState} from "react"
-import { signOutAction } from "./actions"
 // const data = [
 //   { name: "Jan", reports: 65 },
 //   { name: "Feb", reports: 59 },
@@ -71,40 +70,7 @@ const Dashboard = () => {
               </div>
               <div className="flex items-center">
            
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <User className="h-5 w-5" />
-                      <span className="sr-only">Open user menu</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem >
-                        <form action={signOutAction}>
-                        <Button type="submit" className="bg-red-600 hover:bg-red-700 text-white">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-
-                        </Button>
-                      
-                     </form>
-
-              
-                    </DropdownMenuItem>
-
-
             
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
             </div>
           </div>

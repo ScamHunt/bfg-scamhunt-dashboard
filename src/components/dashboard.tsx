@@ -1,53 +1,63 @@
 'use client'
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { Bell, DollarSign, ShieldAlert, Users, User, Settings, LogOut } from "lucide-react"
+// import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bell, DollarSign, ShieldAlert, Users} from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useEffect } from "react"
-import { createClient } from "@/utils/supabase/server"
-const data = [
-  { name: "Jan", reports: 65 },
-  { name: "Feb", reports: 59 },
-  { name: "Mar", reports: 80 },
-  { name: "Apr", reports: 81 },
-  { name: "May", reports: 56 },
-  { name: "Jun", reports: 55 },
-  { name: "Jul", reports: 40 },
-]
+// import { Button } from "@/components/ui/button"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu"
+import { createClient } from "@/utils/supabase/client"
+import { useEffect ,useState} from "react"
+// const data = [
+//   { name: "Jan", reports: 65 },
+//   { name: "Feb", reports: 59 },
+//   { name: "Mar", reports: 80 },
+//   { name: "Apr", reports: 81 },
+//   { name: "May", reports: 56 },
+//   { name: "Jun", reports: 55 },
+//   { name: "Jul", reports: 40 },
+// ]
 
-export async function ScamReportDashboard() {
+const Dashboard = () => {
+    const [reportCount, setreportCount] = useState<number>(0);
+    const [activeUsers, setactiveUsers] = useState<number>(0);
 
-  // const [reportCount, setreportCount] = useState<number>(0);
 
-  const getReportCount = async () => {
-  const supabase = createClient();
-  console.log('supabase', supabase)
-  const { data, error } = await supabase
-    .from('')
-    .select('*',{count: 'exact'})
-    // setreportCount(data ? data.length : 0)
-    console.log(data)
-    console.error(error)
-  return data
-  }
-  const res = await getReportCount()
-    console.log('res', res)
-  
-    useEffect(() => {
-      console.log('rendered')
-    }, [])
+    const getReportCount = async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('report')
+      .select('*')
+      setreportCount(data ? data.length : 0)
+    return data
+    }
 
-  return (
-    <div className={`min-h-screen `}>
+    const getActiveUsers = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('user')
+        .select('*')
+        console.log(data)
+        setactiveUsers(data ? data.length : 0)
+      return data
+      }
+
+
+    
+      useEffect(() => {
+        console.log('rendered')
+        getReportCount()
+        getActiveUsers()
+      }, [])
+
+    return ( 
+         <div className={`min-h-screen `}>
       <div className="bg-off-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <nav className="border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,34 +65,12 @@ export async function ScamReportDashboard() {
               <div className="flex">
                 <div className="flex-shrink-0 flex items-center">
                   <ShieldAlert className="h-8 w-8 text-neon-green dark:text-green-400" />
-                  <span className="ml-2 text-2xl font-bold">ScamHuunt</span>
+                  <span className="ml-2 text-2xl font-bold">ScamHunt</span>
                 </div>
               </div>
               <div className="flex items-center">
            
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <User className="h-5 w-5" />
-                      <span className="sr-only">Open user menu</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+            
               </div>
             </div>
           </div>
@@ -103,8 +91,8 @@ export async function ScamReportDashboard() {
                     <ShieldAlert className="h-4 w-4 text-neon-green dark:text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold"></div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">+12.5% from last month</p>
+                    <div className="text-2xl font-bold">{reportCount}</div>
+                    {/* <p className="text-xs text-zinc-500 dark:text-zinc-400">+12.5% from last month</p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -113,8 +101,8 @@ export async function ScamReportDashboard() {
                     <Users className="h-4 w-4 text-neon-green dark:text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">15,423</div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">+7.2% from last month</p>
+                    <div className="text-2xl font-bold">{activeUsers}</div>
+                    {/* <p className="text-xs text-zinc-500 dark:text-zinc-400">+7.2% from last month</p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -138,7 +126,7 @@ export async function ScamReportDashboard() {
                   </CardContent>
                 </Card>
               </div>
-              <Card>
+              {/* <Card>
                 <CardHeader>
                   <CardTitle>Monthly Scam Reports</CardTitle>
                 </CardHeader>
@@ -151,11 +139,13 @@ export async function ScamReportDashboard() {
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
-              </Card>
+              </Card> */}
             </TabsContent>
           </Tabs>
         </div>
       </div>
     </div>
-  )
+     );
 }
+ 
+export default Dashboard;
