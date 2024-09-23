@@ -1,4 +1,4 @@
-
+'use client'
 // import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Bell, DollarSign, ShieldAlert, Users, User, Settings, LogOut } from "lucide-react"
 
@@ -12,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
+import { createClient } from "@/utils/supabase/client"
+import { useEffect ,useState} from "react"
 import { signOutAction } from "./actions"
 // const data = [
 //   { name: "Jan", reports: 65 },
@@ -25,6 +26,37 @@ import { signOutAction } from "./actions"
 // ]
 
 const Dashboard = () => {
+    const [reportCount, setreportCount] = useState<number>(0);
+    const [activeUsers, setactiveUsers] = useState<number>(0);
+
+
+    const getReportCount = async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('report')
+      .select('*')
+      setreportCount(data ? data.length : 0)
+    return data
+    }
+
+    const getActiveUsers = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('user')
+        .select('*')
+        console.log(data)
+        setactiveUsers(data ? data.length : 0)
+      return data
+      }
+
+
+    
+      useEffect(() => {
+        console.log('rendered')
+        getReportCount()
+        getActiveUsers()
+      }, [])
+
     return ( 
          <div className={`min-h-screen `}>
       <div className="bg-off-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -93,8 +125,8 @@ const Dashboard = () => {
                     <ShieldAlert className="h-4 w-4 text-neon-green dark:text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">2,567</div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">+12.5% from last month</p>
+                    <div className="text-2xl font-bold">{reportCount}</div>
+                    {/* <p className="text-xs text-zinc-500 dark:text-zinc-400">+12.5% from last month</p> */}
                   </CardContent>
                 </Card>
                 <Card>
@@ -103,8 +135,8 @@ const Dashboard = () => {
                     <Users className="h-4 w-4 text-neon-green dark:text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">15,423</div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">+7.2% from last month</p>
+                    <div className="text-2xl font-bold">{activeUsers}</div>
+                    {/* <p className="text-xs text-zinc-500 dark:text-zinc-400">+7.2% from last month</p> */}
                   </CardContent>
                 </Card>
                 <Card>

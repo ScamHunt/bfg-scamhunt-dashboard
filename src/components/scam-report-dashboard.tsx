@@ -1,3 +1,4 @@
+'use client'
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Bell, DollarSign, ShieldAlert, Users, User, Settings, LogOut } from "lucide-react"
 
@@ -11,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
+import { useEffect } from "react"
+import { createClient } from "@/utils/supabase/server"
 const data = [
   { name: "Jan", reports: 65 },
   { name: "Feb", reports: 59 },
@@ -22,17 +24,27 @@ const data = [
   { name: "Jul", reports: 40 },
 ]
 
-export function ScamReportDashboard() {
-  // const [darkMode, setDarkMode] = useState(false)
+export async function ScamReportDashboard() {
 
-  // const toggleDarkMode = () => {
-  //   setDarkMode(!darkMode)
-  //   if (darkMode) {
-  //     document.documentElement.classList.remove("'dark'")
-  //   } else {
-  //     document.documentElement.classList.add("'dark'")
-  //   }
-  // }
+  // const [reportCount, setreportCount] = useState<number>(0);
+
+  const getReportCount = async () => {
+  const supabase = createClient();
+  console.log('supabase', supabase)
+  const { data, error } = await supabase
+    .from('')
+    .select('*',{count: 'exact'})
+    // setreportCount(data ? data.length : 0)
+    console.log(data)
+    console.error(error)
+  return data
+  }
+  const res = await getReportCount()
+    console.log('res', res)
+  
+    useEffect(() => {
+      console.log('rendered')
+    }, [])
 
   return (
     <div className={`min-h-screen `}>
@@ -91,7 +103,7 @@ export function ScamReportDashboard() {
                     <ShieldAlert className="h-4 w-4 text-neon-green dark:text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">2,567</div>
+                    <div className="text-2xl font-bold"></div>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">+12.5% from last month</p>
                   </CardContent>
                 </Card>

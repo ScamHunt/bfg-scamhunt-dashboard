@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
+import { encodedRedirect } from '@/utils/utils'
 
 export async function login(formData: FormData) {
   const supabase = createClient()
@@ -14,12 +15,11 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
-  console.log(data)
 
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/error')
+    encodedRedirect('error', '/login', "Invalid email or password")
   }
 
   revalidatePath('/', 'layout')

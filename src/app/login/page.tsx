@@ -10,12 +10,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 // import { redirect } from 'next/navigation'
-
+import { urlParams } from "@/types/message"
 import { login } from './actions'
+import FormMessage from "@/components/formMessage" 
 
-const Login = () => {
-  
-
+const Login = ({searchParams}:{searchParams:urlParams}) => {
     return ( 
 <div className="flex items-center justify-center min-h-screen p-4 bg-background">
       <Card className="w-full max-w-sm sm:max-w-md">
@@ -37,11 +36,13 @@ const Login = () => {
             <Input name="password" id="password" type="password" required />
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col space-y-2">
           <Button formAction={login} className="w-full bg-green-600 hover:bg-green-700 text-white">
             Sign in
           </Button>
-             
+          <FormMessage message={searchParams} />
+
+            
         </CardFooter>
           </form>
 
