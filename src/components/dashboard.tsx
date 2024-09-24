@@ -27,10 +27,18 @@ import { useEffect ,useState} from "react"
 const Dashboard = () => {
     const [reportCount, setreportCount] = useState<number>(0);
     const [activeUsers, setactiveUsers] = useState<number>(0);
-
-
-    const getReportCount = async () => {
     const supabase = createClient();
+
+
+    const  dbUpdateEvent = async (payload:any) =>{
+        console.log('channel', payload)
+
+                
+
+    }
+        
+    
+    const getReportCount = async () => {
     const { data } = await supabase
       .from('report')
       .select('*')
@@ -39,7 +47,6 @@ const Dashboard = () => {
     }
 
     const getActiveUsers = async () => {
-      const supabase = createClient();
       const { data } = await supabase
         .from('user')
         .select('*')
@@ -52,9 +59,14 @@ const Dashboard = () => {
     
       useEffect(() => {
         console.log('rendered')
+        const channel = supabase.channel('db-update').on('postgres_changes', { event: '*', schema: 'public', table: 'report' }, dbUpdateEvent).subscribe()
         getReportCount()
         getActiveUsers()
-      }, [])
+
+        return () => {
+          supabase.removeChannel(channel)
+        }
+      }, [supabase])
 
     return ( 
          <div className={`min-h-screen `}>
