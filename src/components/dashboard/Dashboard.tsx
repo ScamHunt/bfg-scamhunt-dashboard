@@ -1,8 +1,5 @@
 "use client";
 // import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { Bell, DollarSign, ShieldAlert, Users } from "lucide-react";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { createClient } from "@/utils/supabase/client";

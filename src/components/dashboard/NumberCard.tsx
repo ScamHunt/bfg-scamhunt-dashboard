@@ -1,6 +1,4 @@
-import { DollarSign, LucideIcon, LucideProps } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Icon } from "next/dist/lib/metadata/types/metadata-types";
 
 interface DataCardProps {
   title: string;
