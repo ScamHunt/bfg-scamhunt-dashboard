@@ -6,11 +6,15 @@ import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { NumberCard } from "@/components/dashboard/NumberCard";
 import { Navbar } from "@/components/navbar";
-import { DatePickerWithRange } from "../ui/date-picker";
+// import { DatePickerWithRange } from "../ui/date-picker";
+import Barchart from "./barchart";
+
 
 const Dashboard = () => {
+
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
+  const [reportByPlatform, setreportByPlatform] = useState<Array<object>>([]);
 
   const getReportCount = async () => {
     const supabase = createClient();
@@ -26,11 +30,20 @@ const Dashboard = () => {
     setactiveUsers(data ? data.length : 0);
     return data;
   };
+  
+
+  const getReportByPlatform = async () => {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("get_platform_counts")
+    setreportByPlatform(data);
+    return data;
+  };
 
   useEffect(() => {
     console.log("rendered");
     getReportCount();
     getActiveUsers();
+    getReportByPlatform();
   }, []);
 
   return (
@@ -46,7 +59,7 @@ const Dashboard = () => {
               <TabsTrigger value='reports'>Reports</TabsTrigger>
             </TabsList>
             <TabsContent value='overview' className='space-y-4'>
-              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
                 <NumberCard
                   title={"Total Reports"}
                   content={reportCount}
@@ -57,7 +70,15 @@ const Dashboard = () => {
                   content={activeUsers}
                   subtitle=''
                 />
-                <DatePickerWithRange  />
+                 <NumberCard
+                  title={"Active Users"}
+                  content={activeUsers}
+                  subtitle=''
+                />
+                <div className="col-span-3">
+                    <Barchart  data={reportByPlatform} xAxisKey='platform_name' dataKey="count" />
+
+                </div>
               </div>
             </TabsContent>
           </Tabs>
