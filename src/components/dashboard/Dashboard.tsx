@@ -7,20 +7,33 @@ import { useEffect, useState } from "react";
 import { NumberCard } from "@/components/dashboard/NumberCard";
 import { Navbar } from "@/components/navbar";
 import { DatePickerWithRange } from "../ui/date-picker";
+import { useDateRange } from "../context/DateRangeContext";
 
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
+  const supabase = createClient();
+
+  const { dateRange } = useDateRange();
 
   const getReportCount = async () => {
-    const supabase = createClient();
-    const { data } = await supabase.from("report").select("*");
+    const { data } = await supabase
+      .from("report")
+      .select("*")
+      .gte("created_at", dateRange?.from?.toISOString())
+      .lte("created_at", dateRange?.to?.toISOString());
     setreportCount(data ? data.length : 0);
     return data;
   };
 
   const getActiveUsers = async () => {
-    const supabase = createClient();
+    const { data } = await supabase.from("user").select("*");
+    console.log(data);
+    setactiveUsers(data ? data.length : 0);
+    return data;
+  };
+
+  const reportsPerPlatform = async () => {
     const { data } = await supabase.from("user").select("*");
     console.log(data);
     setactiveUsers(data ? data.length : 0);
@@ -39,6 +52,7 @@ const Dashboard = () => {
         <Navbar />
         <div className='p-8'>
           <h1 className='text-3xl font-bold mb-8'>Scam Report Dashboard</h1>
+          <DatePickerWithRange className='mb-6' />
           <Tabs defaultValue='overview' className='space-y-4'>
             <TabsList>
               <TabsTrigger value='overview'>Overview</TabsTrigger>
@@ -57,7 +71,6 @@ const Dashboard = () => {
                   content={activeUsers}
                   subtitle=''
                 />
-                <DatePickerWithRange  />
               </div>
             </TabsContent>
           </Tabs>
