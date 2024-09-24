@@ -2,7 +2,7 @@
 // import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { NumberCard } from "@/components/dashboard/NumberCard";
 import { Navbar } from "@/components/navbar";
@@ -12,7 +12,6 @@ import { useDateRange } from "../context/DateRangeContext";
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
-  const supabase = createClient();
 
   const { dateRange } = useDateRange();
 
@@ -33,7 +32,7 @@ const Dashboard = () => {
     return data;
   };
 
-  const reportsPerPlatform = async () => {
+  const getTop = async () => {
     const { data } = await supabase.from("user").select("*");
     console.log(data);
     setactiveUsers(data ? data.length : 0);
