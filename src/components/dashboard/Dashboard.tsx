@@ -7,20 +7,24 @@ import { useEffect, useState } from "react";
 import { NumberCard } from "@/components/dashboard/NumberCard";
 import { Navbar } from "@/components/navbar";
 import { DatePickerWithRange } from "../ui/date-picker";
+import { applyDateRange } from "@/utils/supabase/date";
 import { useDateRange } from "../context/DateRangeContext";
+import { Card } from "../ui/card";
+import { LineChart, XAxis, YAxis, Line } from "recharts";
+import { getReportTimeSeries } from "@/utils/supabase/reports";
 
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
+  const [timeSeries, setTimeSeries] = useState<any[]>([]);
 
   const { dateRange } = useDateRange();
 
   const getReportCount = async () => {
-    const { data } = await supabase
-      .from("report")
-      .select("*")
-      .gte("created_at", dateRange?.from?.toISOString())
-      .lte("created_at", dateRange?.to?.toISOString());
+    const { data } = await applyDateRange(
+      supabase.from("report").select("*"),
+      dateRange
+    );
     setreportCount(data ? data.length : 0);
     return data;
   };
@@ -40,31 +44,41 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    console.log("rendered");
     getReportCount();
     getActiveUsers();
-  }, []);
+    getReportTimeSeries();
+  }, [dateRange]);
 
   return (
-    <div className={`min-h-screen `}>
+    <div className='min-h-screen'>
       <div className='bg-off-white dark:bg-gray-900 text-gray-900 dark:text-gray-100'>
         <Navbar />
         <div className='p-8'>
           <h1 className='text-3xl font-bold mb-8'>Scam Report Dashboard</h1>
           <DatePickerWithRange className='mb-6' />
-          <Tabs defaultValue='overview' className='space-y-4'>
+          <Tabs defaultValue='reports' className='space-y-4'>
             <TabsList>
-              <TabsTrigger value='overview'>Overview</TabsTrigger>
-              <TabsTrigger value='analytics'>Analytics</TabsTrigger>
               <TabsTrigger value='reports'>Reports</TabsTrigger>
+              <TabsTrigger value='users'>Users</TabsTrigger>
             </TabsList>
-            <TabsContent value='overview' className='space-y-4'>
+            <TabsContent value='reports' className='space-y-4'>
               <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
                 <NumberCard
                   title={"Total Reports"}
                   content={reportCount}
                   subtitle=''
                 />
+                <Card>
+                  <LineChart>
+                    <XAxis dataKey='day' />
+                    <YAxis />
+                    <Line type='monotone' dataKey='uv' stroke='#8884d8' />
+                  </LineChart>
+                </Card>
+              </div>
+            </TabsContent>
+            <TabsContent value='users' className='space-y-4'>
+              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
                 <NumberCard
                   title={"Active Users"}
                   content={activeUsers}
