@@ -9,23 +9,19 @@ import { Navbar } from "@/components/navbar";
 import { DatePickerWithRange } from "../ui/date-picker";
 import { applyDateRange } from "@/utils/supabase/date";
 import { useDateRange } from "../context/DateRangeContext";
-import { Card } from "../ui/card";
 import {
-  LineChart,
-  XAxis,
-  YAxis,
-  Line,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
-import { getReportTimeSeries } from "@/utils/supabase/reports";
+  getReportByPlatforms,
+  getReportTimeSeries,
+  getScamDistributions,
+} from "@/utils/supabase/reports";
 // import { DatePickerWithRange } from "../ui/date-picker";
-import Barchart from "./barchart";
+import { Barchart, ReportTimeSeriesChart, ScamBreakdownChart } from "./Charts";
 
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
   const [reportByPlatform, setreportByPlatform] = useState<Array<object>>([]);
+  const [scamDistribution, setScamDistribution] = useState<Array<object>>([]);
   const [timeSeries, setTimeSeries] =
     useState<[{ report_date: string; report_count: string }]>();
 
@@ -47,26 +43,29 @@ const Dashboard = () => {
   };
 
   const getReportByPlatform = async () => {
-    const { data } = await supabase.rpc("get_platform_counts");
-    setreportByPlatform(data);
+    const { data } = await getReportByPlatforms({
+      from: dateRange?.from,
+      to: dateRange?.to,
+    });
+    setreportByPlatform(data as any);
     return data;
   };
-
-  // const getTop = async () => {
-  //   const { data } = await supabase.from("user").select("*");
-  //   console.log(data);
-  //   setactiveUsers(data ? data.length : 0);
-  //   return data;
-  // };
 
   const getReportChart = async () => {
     const { data } = await getReportTimeSeries({
       from: dateRange?.from,
       to: dateRange?.to,
     });
-    console.log(data);
-
     setTimeSeries(data as any);
+  };
+
+  const getScamBreakdown = async () => {
+    const { data } = await getScamDistributions({
+      from: dateRange?.from,
+      to: dateRange?.to,
+    });
+    console.log(data);
+    setScamDistribution(data as any);
   };
 
   useEffect(() => {
@@ -74,6 +73,7 @@ const Dashboard = () => {
     getActiveUsers();
     getReportChart();
     getReportByPlatform();
+    getScamBreakdown();
   }, [dateRange]);
 
   return (
@@ -95,26 +95,21 @@ const Dashboard = () => {
                   content={reportCount}
                   subtitle=''
                 />
-                <Card className='p-4 lg:col-span-2'>
-                  <ResponsiveContainer height={300}>
-                    <LineChart data={timeSeries}>
-                      <XAxis name='Date' dataKey='report_date' />
-                      <YAxis name='Count' />
-                      <Tooltip
-                        labelFormatter={(value: string) => {
-                          return new Date(value).toLocaleDateString();
-                        }}
-                      />
-                      <Line
-                        type='monotone'
-                        name='Reports'
-                        dataKey='report_count'
-                        strokeWidth={2}
-                        stroke='#8884d8'
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </Card>
+                <ReportTimeSeriesChart
+                  data={timeSeries as object[]}
+                  xAxisKey='report_date'
+                  dataKey='report_count'
+                />
+                <Barchart
+                  data={reportByPlatform}
+                  xAxisKey='platform_name'
+                  dataKey='count'
+                />
+                <ScamBreakdownChart
+                  data={scamDistribution}
+                  dataKey='count'
+                  xAxisKey='scam_type'
+                />
               </div>
             </TabsContent>
             <TabsContent value='users' className='space-y-4'>
@@ -124,13 +119,6 @@ const Dashboard = () => {
                   content={activeUsers}
                   subtitle=''
                 />
-                <div className='col-span-3'>
-                  <Barchart
-                    data={reportByPlatform}
-                    xAxisKey='platform_name'
-                    dataKey='count'
-                  />
-                </div>
               </div>
             </TabsContent>
           </Tabs>
