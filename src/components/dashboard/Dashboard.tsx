@@ -20,10 +20,13 @@ import {
 } from "recharts";
 import { getReportTimeSeries } from "@/utils/supabase/reports";
 import { report } from "process";
+// import { DatePickerWithRange } from "../ui/date-picker";
+import Barchart from "./barchart";
 
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
+  const [reportByPlatform, setreportByPlatform] = useState<Array<object>>([]);
   const [timeSeries, setTimeSeries] =
     useState<[{ report_date: string; report_count: string }]>();
 
@@ -41,6 +44,13 @@ const Dashboard = () => {
   const getActiveUsers = async () => {
     const { data } = await supabase.from("user").select("*");
     setactiveUsers(data ? data.length : 0);
+    return data;
+  };
+
+  const getReportByPlatform = async () => {
+    const supabase = createClient();
+    const { data } = await supabase.rpc("get_platform_counts");
+    setreportByPlatform(data);
     return data;
   };
 
@@ -65,6 +75,7 @@ const Dashboard = () => {
     getReportCount();
     getActiveUsers();
     getReportChart();
+    getReportByPlatform();
   }, [dateRange]);
 
   return (
@@ -89,10 +100,7 @@ const Dashboard = () => {
                 <Card className='p-4 lg:col-span-2'>
                   <ResponsiveContainer height={300}>
                     <LineChart data={timeSeries}>
-                      <XAxis
-                        name='Date'
-                        dataKey='report_date'
-                      />
+                      <XAxis name='Date' dataKey='report_date' />
                       <YAxis name='Count' />
                       <Tooltip
                         labelFormatter={(value: string) => {
@@ -118,6 +126,13 @@ const Dashboard = () => {
                   content={activeUsers}
                   subtitle=''
                 />
+                <div className='col-span-3'>
+                  <Barchart
+                    data={reportByPlatform}
+                    xAxisKey='platform_name'
+                    dataKey='count'
+                  />
+                </div>
               </div>
             </TabsContent>
           </Tabs>
