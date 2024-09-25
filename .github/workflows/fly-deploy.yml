@@ -13,7 +13,7 @@ jobs:
     name: Echo secrets
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ vars.SUPABASE_KEY }}
+      - run: echo ${{ toJson(vars.SUPABASE_KEY) }}
       - run: echo ${{ vars.SUPABASE_URL }}
     
   deploy:
