@@ -5,7 +5,19 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 jobs:
+  echo:
+    name: Echo secrets
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo $SUPABASE_KEY
+      - run: echo $SUPABASE_URL
+    env:
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
