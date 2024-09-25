@@ -19,7 +19,6 @@ import {
   Tooltip,
 } from "recharts";
 import { getReportTimeSeries } from "@/utils/supabase/reports";
-import { report } from "process";
 // import { DatePickerWithRange } from "../ui/date-picker";
 import Barchart from "./barchart";
 
