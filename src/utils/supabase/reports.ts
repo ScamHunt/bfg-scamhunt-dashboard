@@ -20,3 +20,29 @@ export const getReportTimeSeries = async (config: {
 
   return data;
 };
+
+export const getReportByPlatforms = async (config: {
+  from?: Date;
+  to?: Date;
+}) => {
+  const data = await supabase
+    .rpc("get_platform_counts", {
+      from_date: stripTimezone(config.from),
+      to_date: stripTimezone(config.to),
+    })
+    .select("*");
+  return data;
+};
+
+export const getScamDistributions = async (config: {
+  from?: Date;
+  to?: Date;
+}) => {
+  const data = await supabase
+    .rpc("get_scam_distribution", {
+      from_date: stripTimezone(config.from),
+      to_date: stripTimezone(config.to),
+    })
+    .select("*");
+  return data;
+};
