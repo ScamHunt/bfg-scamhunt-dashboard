@@ -48,7 +48,6 @@ const Dashboard = () => {
   };
 
   const getReportByPlatform = async () => {
-    const supabase = createClient();
     const { data } = await supabase.rpc("get_platform_counts");
     setreportByPlatform(data);
     return data;
