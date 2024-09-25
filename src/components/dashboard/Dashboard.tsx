@@ -10,13 +10,22 @@ import { DatePickerWithRange } from "../ui/date-picker";
 import { applyDateRange } from "@/utils/supabase/date";
 import { useDateRange } from "../context/DateRangeContext";
 import { Card } from "../ui/card";
-import { LineChart, XAxis, YAxis, Line } from "recharts";
+import {
+  LineChart,
+  XAxis,
+  YAxis,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import { getReportTimeSeries } from "@/utils/supabase/reports";
+import { report } from "process";
 
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [activeUsers, setactiveUsers] = useState<number>(0);
-  const [timeSeries, setTimeSeries] = useState<any[]>([]);
+  const [timeSeries, setTimeSeries] =
+    useState<[{ report_date: string; report_count: string }]>();
 
   const { dateRange } = useDateRange();
 
@@ -31,22 +40,31 @@ const Dashboard = () => {
 
   const getActiveUsers = async () => {
     const { data } = await supabase.from("user").select("*");
-    console.log(data);
     setactiveUsers(data ? data.length : 0);
     return data;
   };
 
-  const getTop = async () => {
-    const { data } = await supabase.from("user").select("*");
+  // const getTop = async () => {
+  //   const { data } = await supabase.from("user").select("*");
+  //   console.log(data);
+  //   setactiveUsers(data ? data.length : 0);
+  //   return data;
+  // };
+
+  const getReportChart = async () => {
+    const { data } = await getReportTimeSeries({
+      from: dateRange?.from,
+      to: dateRange?.to,
+    });
     console.log(data);
-    setactiveUsers(data ? data.length : 0);
-    return data;
+
+    setTimeSeries(data as any);
   };
 
   useEffect(() => {
     getReportCount();
     getActiveUsers();
-    getReportTimeSeries();
+    getReportChart();
   }, [dateRange]);
 
   return (
@@ -68,12 +86,28 @@ const Dashboard = () => {
                   content={reportCount}
                   subtitle=''
                 />
-                <Card>
-                  <LineChart>
-                    <XAxis dataKey='day' />
-                    <YAxis />
-                    <Line type='monotone' dataKey='uv' stroke='#8884d8' />
-                  </LineChart>
+                <Card className='p-4 lg:col-span-2'>
+                  <ResponsiveContainer height={300}>
+                    <LineChart data={timeSeries}>
+                      <XAxis
+                        name='Date'
+                        dataKey='report_date'
+                      />
+                      <YAxis name='Count' />
+                      <Tooltip
+                        labelFormatter={(value: string) => {
+                          return new Date(value).toLocaleDateString();
+                        }}
+                      />
+                      <Line
+                        type='monotone'
+                        name='Reports'
+                        dataKey='report_count'
+                        strokeWidth={2}
+                        stroke='#8884d8'
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </Card>
               </div>
             </TabsContent>
