@@ -9,13 +9,6 @@ on:
     branches:
       - main
 jobs:
-  echo:
-    name: Echo secrets
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{ toJson(vars.SUPABASE_KEY) }}
-      - run: echo ${{ vars.SUPABASE_URL }}
-    
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
@@ -23,6 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --env NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ vars.SUPABASE_KEY }} --env NEXT_PUBLIC_SUPABASE_URL=${{ vars.SUPABASE_URL }} s
+      - run: flyctl deploy --remote-only 
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
