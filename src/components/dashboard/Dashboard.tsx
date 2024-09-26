@@ -83,45 +83,36 @@ const Dashboard = () => {
         <div className='p-8'>
           <h1 className='text-3xl font-bold mb-8'>Scam Report Dashboard</h1>
           <DatePickerWithRange className='mb-6' />
-          <Tabs defaultValue='reports' className='space-y-4'>
-            <TabsList>
-              <TabsTrigger value='reports'>Reports</TabsTrigger>
-              <TabsTrigger value='users'>Users</TabsTrigger>
-            </TabsList>
-            <TabsContent value='reports' className='space-y-4'>
-              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <NumberCard
-                  title={"Total Reports"}
-                  content={reportCount}
-                  subtitle=''
-                />
-                <ReportTimeSeriesChart
-                  data={timeSeries as object[]}
-                  xAxisKey='report_date'
-                  dataKey='report_count'
-                />
-                <Barchart
-                  data={reportByPlatform}
-                  xAxisKey='platform_name'
-                  dataKey='count'
-                />
-                <ScamBreakdownChart
-                  data={scamDistribution}
-                  dataKey='count'
-                  xAxisKey='scam_type'
-                />
-              </div>
-            </TabsContent>
-            <TabsContent value='users' className='space-y-4'>
-              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <NumberCard
-                  title={"Active Users"}
-                  content={activeUsers}
-                  subtitle=''
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
+
+          <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+            <NumberCard
+              title={"Total Reports"}
+              content={reportCount}
+              subtitle=''
+            />
+
+            <ReportTimeSeriesChart
+              data={timeSeries as object[]}
+              xAxisKey='report_date'
+              dataKey='report_count'
+            />
+
+            <NumberCard
+              title={"Active Users"}
+              content={activeUsers}
+              subtitle=''
+            />
+            <Barchart
+              data={reportByPlatform}
+              xAxisKey='platform_name'
+              dataKey='count'
+            />
+            <ScamBreakdownChart
+              data={scamDistribution}
+              dataKey='count'
+              xAxisKey='scam_type'
+            />
+          </div>
         </div>
       </div>
     </div>
