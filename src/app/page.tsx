@@ -1,11 +1,17 @@
 import { DateRangeProvider } from "@/components/context/DateRangeContext";
 import Dashboard from "@/components/dashboard/Dashboard";
+import Head from "next/head";
 
 const Home = () => {
   return (
-    <DateRangeProvider>
-      <Dashboard />
-    </DateRangeProvider>
+    <>
+      <Head>
+        <title>ScamHunt Dashboard</title>
+      </Head>
+      <DateRangeProvider>
+        <Dashboard />
+      </DateRangeProvider>
+    </>
   );
 };
 
