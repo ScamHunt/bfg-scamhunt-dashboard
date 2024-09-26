@@ -18,7 +18,9 @@ const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [reportByPlatform, setreportByPlatform] = useState<Array<object>>([]);
-  const [scamDistribution, setScamDistribution] = useState<Array<object>>([]);
+  const [scamDistribution, setScamDistribution] = useState<
+    { scam_type: string; count: number }[]
+  >([]);
   const [likelyScams, setLikelyScams] = useState<number>(0);
   const [timeSeries, setTimeSeries] =
     useState<[{ report_date: string; report_count: string }]>();
@@ -91,7 +93,15 @@ const Dashboard = () => {
           <div className='flex items-center justify-between mb-8'>
             <p className='mr-4'>
               User reported potential scam posts on social media using
-              @ScamHunt_bot on Telegram
+              <a
+                className='mx-1 text-blue-500 hover:text-blue-600'
+                href='https://t.me/scamhunt_bot'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                @ScamHunt_bot
+              </a>
+              on Telegram
             </p>
             <DatePickerWithRange className='mb-0' />
           </div>
