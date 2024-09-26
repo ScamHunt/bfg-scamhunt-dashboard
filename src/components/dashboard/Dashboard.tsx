@@ -1,6 +1,4 @@
 "use client";
-// import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -14,14 +12,14 @@ import {
   getReportTimeSeries,
   getScamDistributions,
 } from "@/utils/supabase/reports";
-// import { DatePickerWithRange } from "../ui/date-picker";
-import { Barchart, ReportTimeSeriesChart, ScamBreakdownChart } from "./Charts";
+import { Barchart, ReportTimeSeriesChart, ScamPieChart } from "./Charts";
 
 const Dashboard = () => {
   const [reportCount, setreportCount] = useState<number>(0);
-  const [activeUsers, setactiveUsers] = useState<number>(0);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [reportByPlatform, setreportByPlatform] = useState<Array<object>>([]);
   const [scamDistribution, setScamDistribution] = useState<Array<object>>([]);
+  const [likelyScams, setLikelyScams] = useState<number>(0);
   const [timeSeries, setTimeSeries] =
     useState<[{ report_date: string; report_count: string }]>();
 
@@ -38,7 +36,7 @@ const Dashboard = () => {
 
   const getActiveUsers = async () => {
     const { data } = await supabase.from("user").select("*");
-    setactiveUsers(data ? data.length : 0);
+    setTotalUsers(data ? data.length : 0);
     return data;
   };
 
@@ -64,8 +62,16 @@ const Dashboard = () => {
       from: dateRange?.from,
       to: dateRange?.to,
     });
-    console.log(data);
     setScamDistribution(data as any);
+  };
+
+  const getLikelyScams = async () => {
+    const { data } = await applyDateRange(
+      supabase.from("report").select("*").gte("scam_likelihood", 85),
+      dateRange
+    );
+    setLikelyScams(data ? data.length : 0);
+    return data;
   };
 
   useEffect(() => {
@@ -74,6 +80,7 @@ const Dashboard = () => {
     getReportChart();
     getReportByPlatform();
     getScamBreakdown();
+    getLikelyScams();
   }, [dateRange]);
 
   return (
@@ -81,47 +88,55 @@ const Dashboard = () => {
       <div className='bg-off-white dark:bg-gray-900 text-gray-900 dark:text-gray-100'>
         <Navbar />
         <div className='p-8'>
-          <h1 className='text-3xl font-bold mb-8'>Scam Report Dashboard</h1>
-          <DatePickerWithRange className='mb-6' />
-          <Tabs defaultValue='reports' className='space-y-4'>
-            <TabsList>
-              <TabsTrigger value='reports'>Reports</TabsTrigger>
-              <TabsTrigger value='users'>Users</TabsTrigger>
-            </TabsList>
-            <TabsContent value='reports' className='space-y-4'>
-              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <NumberCard
-                  title={"Total Reports"}
-                  content={reportCount}
-                  subtitle=''
-                />
-                <ReportTimeSeriesChart
-                  data={timeSeries as object[]}
-                  xAxisKey='report_date'
-                  dataKey='report_count'
-                />
-                <Barchart
-                  data={reportByPlatform}
-                  xAxisKey='platform_name'
-                  dataKey='count'
-                />
-                <ScamBreakdownChart
-                  data={scamDistribution}
-                  dataKey='count'
-                  xAxisKey='scam_type'
-                />
-              </div>
-            </TabsContent>
-            <TabsContent value='users' className='space-y-4'>
-              <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-                <NumberCard
-                  title={"Active Users"}
-                  content={activeUsers}
-                  subtitle=''
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
+          <div className='flex items-center justify-between mb-8'>
+            <p className='mr-4'>
+              User reported potential scam posts on social media using
+              @ScamHunt_bot on Telegram
+            </p>
+            <DatePickerWithRange className='mb-0' />
+          </div>
+          <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+            <NumberCard
+              content={[
+                { title: "Total Reports", data: reportCount.toString() },
+                { title: "Total Users", data: totalUsers.toString() },
+                {
+                  title: "Most Reported Scam Category",
+                  data: (scamDistribution[0]?.["scam_type"] as string) || "N/A",
+                },
+              ]}
+            />
+            <ReportTimeSeriesChart
+              title='Reports Over Time'
+              data={timeSeries as object[]}
+              xAxisKey='report_date'
+              dataKey='report_count'
+            />
+            <Barchart
+              title='Reports By Platform'
+              data={reportByPlatform}
+              xAxisKey='platform_name'
+              dataKey='count'
+            />
+            <ScamPieChart
+              title='Potential Scams Breakdown'
+              data={scamDistribution}
+              dataKey='count'
+              xAxisKey='scam_type'
+            />
+            <ScamPieChart
+              title='Potential Scams Likeliness'
+              data={[
+                { scam_type: "Likely Scam", count: likelyScams },
+                {
+                  scam_type: "Not Likely Scam",
+                  count: reportCount - likelyScams,
+                },
+              ]}
+              dataKey='count'
+              xAxisKey='scam_type'
+            />
+          </div>
         </div>
       </div>
     </div>

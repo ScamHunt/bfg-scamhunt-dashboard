@@ -32,6 +32,7 @@ import {
 import React from "react";
 
 interface ChartProps {
+  title: string;
   data: object[];
   xAxisKey?: string;
   dataKey: string;
@@ -48,11 +49,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const Barchart = ({ data, xAxisKey, dataKey }: ChartProps) => {
+export const Barchart = ({ title, data, xAxisKey, dataKey }: ChartProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reports By Platform </CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
@@ -79,17 +80,22 @@ export const Barchart = ({ data, xAxisKey, dataKey }: ChartProps) => {
   );
 };
 
-export const ReportTimeSeriesChart = (props: ChartProps, className: string) => {
+export const ReportTimeSeriesChart = ({
+  title,
+  data,
+  xAxisKey,
+  dataKey,
+}: ChartProps) => {
   return (
     <Card className='col-span-2'>
       <CardHeader>
-        <CardTitle>Reports Over Time</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-[300px] w-full'>
-          <LineChart data={props.data}>
-            <XAxis name='Date' dataKey={props.xAxisKey} />
+          <LineChart data={data}>
+            <XAxis name='Date' dataKey={xAxisKey} />
             <YAxis name='Count' />
             <Tooltip
               labelFormatter={(value: string) => {
@@ -99,7 +105,7 @@ export const ReportTimeSeriesChart = (props: ChartProps, className: string) => {
             <Line
               type='monotone'
               name='Reports'
-              dataKey={props.dataKey}
+              dataKey={dataKey}
               strokeWidth={2}
               stroke='#8884d8'
             />
@@ -110,7 +116,12 @@ export const ReportTimeSeriesChart = (props: ChartProps, className: string) => {
   );
 };
 
-export const ScamBreakdownChart = (props: ChartProps) => {
+export const ScamPieChart = ({
+  title,
+  data,
+  xAxisKey,
+  dataKey,
+}: ChartProps) => {
   // a list of 10 nice colors, not too bright and pleasant to the eye.
   let colors = [
     "#264653",
@@ -125,23 +136,25 @@ export const ScamBreakdownChart = (props: ChartProps) => {
     "#f4a261",
   ];
 
-  props.data.forEach((item: any) => {
+  data.forEach((item: any) => {
     //give a random color
     item.fill = colors[Math.floor(Math.random() * colors.length)];
   });
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Potential Scams Breakdown</CardTitle>
-        <CardDescription></CardDescription>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-[300px] w-full'>
           <PieChart>
             <Pie
-              data={props.data}
-              dataKey={props.dataKey}
-              nameKey={props.xAxisKey}
+              data={data.map((item, index) => ({
+                ...item,
+                fill: colors[index % colors.length],
+              }))}
+              dataKey={dataKey}
+              nameKey={xAxisKey}
               stroke='#ffffff'
               label
             />
