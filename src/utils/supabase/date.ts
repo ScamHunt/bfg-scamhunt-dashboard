@@ -11,6 +11,5 @@ export const applyDateRange = async (
     .gte("created_at", range?.from?.toISOString())
     .lte("created_at", range?.to?.toISOString());
 };
-
 export const stripTimezone = (date: Date | undefined) =>
-  date ? new Date(date.toISOString().split("T")[0]) : null;
+  date ? date.toISOString().split('T')[0] : null;

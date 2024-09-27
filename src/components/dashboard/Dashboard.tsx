@@ -11,8 +11,15 @@ import {
   getReportByPlatforms,
   getReportTimeSeries,
   getScamDistributions,
+  getScamUrls,
 } from "@/utils/supabase/reports";
-import { Barchart, ReportTimeSeriesChart, ScamPieChart } from "./Charts";
+import {
+  Barchart,
+  ReportTimeSeriesChart,
+  ScamPieChart,
+  ScamLink,
+  LinkTable,
+} from "./Charts";
 
 const Dashboard = () => {
   const [reportCount, setReportCount] = useState<number>(0);
@@ -21,6 +28,7 @@ const Dashboard = () => {
   const [scamDistribution, setScamDistribution] = useState<
     { scam_type: string; count: number }[]
   >([]);
+  const [scamLinks, setScamLinks] = useState<ScamLink[]>([]);
   const [likelyScams, setLikelyScams] = useState<number>(0);
   const [timeSeries, setTimeSeries] =
     useState<[{ report_date: string; report_count: string }]>();
@@ -37,7 +45,10 @@ const Dashboard = () => {
   };
 
   const getActiveUsers = async () => {
-    const { data } = await supabase.from("user").select("*");
+    const { data } = await applyDateRange(
+      supabase.from("user").select("*"),
+      dateRange
+    );
     setTotalUsers(data ? data.length : 0);
     return data;
   };
@@ -76,6 +87,15 @@ const Dashboard = () => {
     return data;
   };
 
+  const getScamLinks = async () => {
+    const { data } = await getScamUrls({
+      from: dateRange?.from,
+      to: dateRange?.to,
+    });
+    setScamLinks(data as any);
+    return data;
+  };
+
   useEffect(() => {
     getReportCount();
     getActiveUsers();
@@ -83,6 +103,7 @@ const Dashboard = () => {
     getReportByPlatform();
     getScamBreakdown();
     getLikelyScams();
+    getScamLinks();
   }, [dateRange]);
 
   return (
@@ -151,6 +172,7 @@ const Dashboard = () => {
               dataKey='count'
               xAxisKey='scam_type'
             />
+            <LinkTable scamLinks={scamLinks} />
           </div>
         </div>
       </div>
