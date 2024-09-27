@@ -4,7 +4,6 @@ import { supabase } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { NumberCard } from "@/components/dashboard/NumberCard";
 import { Navbar } from "@/components/navbar";
-import { DatePickerWithRange } from "../ui/date-picker";
 import { applyDateRange } from "@/utils/supabase/date";
 import { useDateRange } from "../context/DateRangeContext";
 import {
@@ -20,8 +19,8 @@ import {
   ScamLink,
   LinkTable,
 } from "./Charts";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { DatePickerButton } from "./DatePickerButton";
+import { format } from "date-fns"; // Add this import
 
 const Dashboard = () => {
   const [reportCount, setReportCount] = useState<number>(0);
@@ -38,21 +37,21 @@ const Dashboard = () => {
   const { dateRange } = useDateRange();
 
   const getReportCount = async () => {
-    const { data } = await applyDateRange(
-      supabase.from("report").select("*"),
+    const { count } = await applyDateRange(
+      supabase.from("report").select("*", { count: "exact" }),
       dateRange
     );
-    setReportCount(data ? data.length : 0);
-    return data;
+    setReportCount(count as number);
+    return count;
   };
 
   const getActiveUsers = async () => {
-    const { data } = await applyDateRange(
-      supabase.from("user").select("*"),
+    const { count } = await applyDateRange(
+      supabase.from("user").select("*", { count: "exact" }),
       dateRange
     );
-    setTotalUsers(data ? data.length : 0);
-    return data;
+    setTotalUsers(count as number);
+    return count;
   };
 
   const getReportByPlatform = async () => {
@@ -108,13 +107,18 @@ const Dashboard = () => {
     getScamLinks();
   }, [dateRange]);
 
+  // Add this function to format dates consistently
+  const formatDate = (date: Date) => {
+    return format(date, "dd/MM/yyyy");
+  };
+
   return (
     <div className='min-h-screen'>
       <div className='bg-off-white dark:bg-gray-900 text-gray-900 dark:text-gray-100'>
         <Navbar />
         <div className='p-8'>
-          <div className='flex items-center justify-between mb-8'>
-            <p className='mr-4'>
+          <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0'>
+            <p className='mr-4 mb-2 sm:mb-0'>
               User reported potential scam posts on social media using
               <a
                 className='mx-1 text-blue-500 hover:text-blue-600'
@@ -126,22 +130,25 @@ const Dashboard = () => {
               </a>
               on Telegram
             </p>
-            <div className='flex items-center space-x-4'>
+            <div className='flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4'>
               <div className='flex items-center'>
-                <span className='text-sm font-medium'>
+                <span className='text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px] md:max-w-none'>
                   {dateRange?.from && dateRange?.to
-                    ? `${dateRange.from.toLocaleDateString()} - ${dateRange.to.toLocaleDateString()}`
+                    ? `${formatDate(dateRange.from)} - ${formatDate(
+                        dateRange.to
+                      )}`
                     : "No date range selected"}
                 </span>
               </div>
               <DatePickerButton />
             </div>
           </div>
-          <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+          <div className='grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
             <NumberCard
+              className='col-span-1 sm:col-span-2 lg:col-span-1'
               content={[
                 { title: "Total Reports", data: reportCount.toString() },
-                { title: "Total Users", data: totalUsers.toString() },
+                { title: "Total Reporters", data: totalUsers.toString() },
                 {
                   title: "Most Reported Scam Category",
                   data:
@@ -154,24 +161,28 @@ const Dashboard = () => {
               ]}
             />
             <ReportTimeSeriesChart
+              className='col-span-1 sm:col-span-2'
               title='Reports Over Time'
               data={timeSeries as object[]}
               xAxisKey='report_date'
               dataKey='report_count'
             />
             <Barchart
+              className='col-span-1 sm:col-span-2 lg:col-span-1'
               title='Reports By Platform'
               data={reportByPlatform}
               xAxisKey='platform_name'
               dataKey='count'
             />
             <ScamPieChart
+              className='col-span-1 sm:col-span-1'
               title='Potential Scams Breakdown'
               data={scamDistribution}
               dataKey='count'
               xAxisKey='scam_type'
             />
             <ScamPieChart
+              className='col-span-1 sm:col-span-1'
               title='Potential Scams Likeliness'
               data={[
                 { scam_type: "Likely Scam", count: likelyScams },
@@ -183,7 +194,10 @@ const Dashboard = () => {
               dataKey='count'
               xAxisKey='scam_type'
             />
-            <LinkTable scamLinks={scamLinks} />
+            <LinkTable
+              scamLinks={scamLinks}
+              className='col-span-1 sm:col-span-2'
+            />
           </div>
         </div>
       </div>
