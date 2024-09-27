@@ -46,3 +46,13 @@ export const getScamDistributions = async (config: {
     .select("*");
   return data;
 };
+
+export const getScamUrls = async (config: { from?: Date; to?: Date }) => {
+  const data = await supabase
+    .rpc("get_top_risk_links", {
+      from_date: stripTimezone(config.from),
+      to_date: stripTimezone(config.to),
+    })
+    .select("*");
+  return data;
+};

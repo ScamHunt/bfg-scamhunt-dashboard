@@ -30,6 +30,15 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { Badge } from "../ui/badge";
 
 interface ChartProps {
   title: string;
@@ -48,10 +57,39 @@ const chartConfig = {
     color: "#60a5fa",
   },
 } satisfies ChartConfig;
+const getSeverityColor = (confidenceLevel: string) => {
+  switch (confidenceLevel.toLowerCase()) {
+    case "extremely_high":
+      return "bg-red-600";
+    case "high":
+      return "bg-red-400";
+    case "medium":
+      return "bg-yellow-500";
+    case "low":
+      return "bg-green-500";
+    default:
+      return "bg-gray-500";
+  }
+};
+
+const renderThreatBadge = (
+  riskScores: { threat_type: string; confidence_level: string }[],
+  threatType: string
+) => {
+  const score = riskScores.find((score) => score.threat_type === threatType);
+  if (!score) return <Badge className='bg-gray-500'>N/A</Badge>;
+
+  const severityColor = getSeverityColor(score.confidence_level);
+  return (
+    <Badge className={`${severityColor} text-white`}>
+      {score.confidence_level}
+    </Badge>
+  );
+};
 
 export const Barchart = ({ title, data, xAxisKey, dataKey }: ChartProps) => {
   return (
-    <Card>
+    <Card key={`barchart-${title}`}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription></CardDescription>
@@ -87,7 +125,7 @@ export const ReportTimeSeriesChart = ({
   dataKey,
 }: ChartProps) => {
   return (
-    <Card className='col-span-2'>
+    <Card key={`timeseries-${title}`} className='col-span-2'>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription></CardDescription>
@@ -141,7 +179,7 @@ export const ScamPieChart = ({
     item.fill = colors[Math.floor(Math.random() * colors.length)];
   });
   return (
-    <Card>
+    <Card key={`piechart-${title}`}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
@@ -162,6 +200,63 @@ export const ScamPieChart = ({
             <Legend />
           </PieChart>
         </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+};
+
+export interface ScamLink {
+  url: string;
+  redirects: string[];
+  risk_scores: { threat_type: string; confidence_level: string }[];
+}
+export const LinkTable = ({ scamLinks }: { scamLinks: ScamLink[] }) => {
+  const uniqueLinks = Array.from(
+    new Set(scamLinks.map((link) => link.url))
+  ).map((url) => scamLinks.find((link) => link.url === url)!);
+
+  const countDuplicateSites = (url: string) => {
+    return scamLinks.filter((link) => link.url === url).length;
+  };
+
+  return (
+    <Card key='scam-links-table' className='col-span-2'>
+      <CardHeader>
+        <CardTitle>Potential Scam Links From Reports</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className='max-h-[400px] overflow-y-auto'>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>URL</TableHead>
+                <TableHead>Redirects</TableHead>
+                <TableHead>Unwanted Software</TableHead>
+                <TableHead>Social Engineering</TableHead>
+                <TableHead>Malware</TableHead>
+                <TableHead>Occurrences</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {uniqueLinks.map((link, index) => (
+                <TableRow key={index}>
+                  <TableCell>{link.url}</TableCell>
+                  <TableCell>{link.redirects.length}</TableCell>
+                  <TableCell>
+                    {renderThreatBadge(link.risk_scores, "UNWANTED_SOFTWARE")}
+                  </TableCell>
+                  <TableCell>
+                    {renderThreatBadge(link.risk_scores, "SOCIAL_ENGINEERING")}
+                  </TableCell>
+                  <TableCell>
+                    {renderThreatBadge(link.risk_scores, "MALWARE")}
+                  </TableCell>
+                  <TableCell>{countDuplicateSites(link.url)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
