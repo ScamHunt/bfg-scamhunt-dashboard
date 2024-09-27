@@ -4,7 +4,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Legend,
   Line,
   LineChart,
@@ -45,6 +44,7 @@ interface ChartProps {
   data: object[];
   xAxisKey?: string;
   dataKey: string;
+  className?: string;
 }
 
 const chartConfig = {
@@ -87,9 +87,15 @@ const renderThreatBadge = (
   );
 };
 
-export const Barchart = ({ title, data, xAxisKey, dataKey }: ChartProps) => {
+export const Barchart = ({
+  title,
+  data,
+  xAxisKey,
+  dataKey,
+  className,
+}: ChartProps) => {
   return (
-    <Card key={`barchart-${title}`}>
+    <Card key={`barchart-${title}`} className={className}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription></CardDescription>
@@ -123,9 +129,10 @@ export const ReportTimeSeriesChart = ({
   data,
   xAxisKey,
   dataKey,
+  className,
 }: ChartProps) => {
   return (
-    <Card key={`timeseries-${title}`} className='col-span-2'>
+    <Card key={`timeseries-${title}`} className={className}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription></CardDescription>
@@ -159,6 +166,7 @@ export const ScamPieChart = ({
   data,
   xAxisKey,
   dataKey,
+  className,
 }: ChartProps) => {
   // a list of 10 nice colors, not too bright and pleasant to the eye.
   let colors = [
@@ -179,7 +187,7 @@ export const ScamPieChart = ({
     item.fill = colors[Math.floor(Math.random() * colors.length)];
   });
   return (
-    <Card key={`piechart-${title}`}>
+    <Card key={`piechart-${title}`} className={className}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
@@ -210,7 +218,13 @@ export interface ScamLink {
   redirects: string[];
   risk_scores: { threat_type: string; confidence_level: string }[];
 }
-export const LinkTable = ({ scamLinks }: { scamLinks: ScamLink[] }) => {
+export const LinkTable = ({
+  scamLinks,
+  className,
+}: {
+  scamLinks: ScamLink[];
+  className?: string;
+}) => {
   const uniqueLinks = Array.from(
     new Set(scamLinks.map((link) => link.url))
   ).map((url) => scamLinks.find((link) => link.url === url)!);
@@ -220,7 +234,7 @@ export const LinkTable = ({ scamLinks }: { scamLinks: ScamLink[] }) => {
   };
 
   return (
-    <Card key='scam-links-table' className='col-span-2'>
+    <Card key='scam-links-table' className={className}>
       <CardHeader>
         <CardTitle>Potential Scam Links From Reports</CardTitle>
       </CardHeader>
