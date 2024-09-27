@@ -20,6 +20,8 @@ import {
   ScamLink,
   LinkTable,
 } from "./Charts";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { DatePickerButton } from "./DatePickerButton";
 
 const Dashboard = () => {
   const [reportCount, setReportCount] = useState<number>(0);
@@ -124,7 +126,16 @@ const Dashboard = () => {
               </a>
               on Telegram
             </p>
-            <DatePickerWithRange className='mb-0' />
+            <div className='flex items-center space-x-4'>
+              <div className='flex items-center'>
+                <span className='text-sm font-medium'>
+                  {dateRange?.from && dateRange?.to
+                    ? `${dateRange.from.toLocaleDateString()} - ${dateRange.to.toLocaleDateString()}`
+                    : "No date range selected"}
+                </span>
+              </div>
+              <DatePickerButton />
+            </div>
           </div>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
             <NumberCard
