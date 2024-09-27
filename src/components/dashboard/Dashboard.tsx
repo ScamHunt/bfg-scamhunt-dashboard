@@ -15,9 +15,9 @@ import {
 import { Barchart, ReportTimeSeriesChart, ScamPieChart } from "./Charts";
 
 const Dashboard = () => {
-  const [reportCount, setreportCount] = useState<number>(0);
+  const [reportCount, setReportCount] = useState<number>(0);
   const [totalUsers, setTotalUsers] = useState<number>(0);
-  const [reportByPlatform, setreportByPlatform] = useState<Array<object>>([]);
+  const [reportByPlatform, setReportByPlatform] = useState<Array<object>>([]);
   const [scamDistribution, setScamDistribution] = useState<
     { scam_type: string; count: number }[]
   >([]);
@@ -32,7 +32,7 @@ const Dashboard = () => {
       supabase.from("report").select("*"),
       dateRange
     );
-    setreportCount(data ? data.length : 0);
+    setReportCount(data ? data.length : 0);
     return data;
   };
 
@@ -47,7 +47,7 @@ const Dashboard = () => {
       from: dateRange?.from,
       to: dateRange?.to,
     });
-    setreportByPlatform(data as any);
+    setReportByPlatform(data as any);
     return data;
   };
 
@@ -112,7 +112,12 @@ const Dashboard = () => {
                 { title: "Total Users", data: totalUsers.toString() },
                 {
                   title: "Most Reported Scam Category",
-                  data: (scamDistribution[0]?.["scam_type"] as string) || "N/A",
+                  data:
+                    scamDistribution.reduce(
+                      (max, current) =>
+                        current.count > max.count ? current : max,
+                      scamDistribution[0]
+                    )?.["scam_type"] || "N/A",
                 },
               ]}
             />

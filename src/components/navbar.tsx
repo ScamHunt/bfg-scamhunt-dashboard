@@ -8,7 +8,7 @@ export const Navbar = () => {
         <div className='flex justify-between h-16'>
           <div className='flex'>
             <div className='flex-shrink-0 flex items-center'>
-              <Image src='/logo.jpg' alt='ScamHunt' width='48' height='48' />
+              <Image src='/logo.png' alt='ScamHunt' width='48' height='48' />
               <span className='ml-2 text-xl'>
                 ScamHunt Dashboard For Law Enforcement Authorities
               </span>
