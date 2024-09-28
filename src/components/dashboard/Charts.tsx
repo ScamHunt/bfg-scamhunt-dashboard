@@ -245,7 +245,7 @@ export const LinkTable = ({
               <TableRow>
                 <TableHead>URL</TableHead>
                 <TableHead>Redirects</TableHead>
-                <TableHead>Unwanted Software</TableHead>
+                {/* <TableHead>Unwanted Software</TableHead> */}
                 <TableHead>Social Engineering</TableHead>
                 <TableHead>Malware</TableHead>
                 <TableHead>Occurrences</TableHead>
@@ -256,9 +256,9 @@ export const LinkTable = ({
                 <TableRow key={index}>
                   <TableCell>{link.url}</TableCell>
                   <TableCell>{link.redirects.length}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {renderThreatBadge(link.risk_scores, "UNWANTED_SOFTWARE")}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     {renderThreatBadge(link.risk_scores, "SOCIAL_ENGINEERING")}
                   </TableCell>
